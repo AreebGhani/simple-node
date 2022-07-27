@@ -1,70 +1,124 @@
-# Getting Started with Create React App
+## The node.js example app
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![CircleCI](https://img.shields.io/circleci/project/github/contentful/the-example-app.nodejs.svg)](https://circleci.com/gh/contentful/the-example-app.nodejs)
 
-## Available Scripts
+The node.js example app teaches the very basics of how to work with Contentful:
 
-In the project directory, you can run:
+- consume content from the Contentful Delivery and Preview APIs
+- model content
+- edit content through the Contentful web app
 
-### `npm start`
+The app demonstrates how decoupling content from its presentation enables greater flexibility and facilitates shipping higher quality software more quickly.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+<a href="https://the-example-app-nodejs.herokuapp.com/" target="_blank"><img src="https://images.contentful.com/qz0n5cdakyl9/4GZmvrdodGM6CksMCkkAEq/700a527b8203d4d3ccd3c303c5b3e2aa/the-example-app.png" alt="Screenshot of the example app"/></a>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+You can see a hosted version of `The node.js example app` on <a href="https://the-example-app-nodejs.contentful.com/" target="_blank">Heroku</a>.
 
-### `npm test`
+## What is Contentful?
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+[Contentful](https://www.contentful.com) provides a content infrastructure for digital teams to power content in websites, apps, and devices. Unlike a CMS, Contentful was built to integrate with the modern software stack. It offers a central hub for structured content, powerful management and delivery APIs, and a customizable web app that enable developers and content creators to ship digital products faster.
 
-### `npm run build`
+## Requirements
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* Node 8
+* Git
+* Contentful CLI (only for write access)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Without any changes, this app is connected to a Contentful space with read-only access. To experience the full end-to-end Contentful experience, you need to connect the app to a Contentful space with read _and_ write access. This enables you to see how content editing in the Contentful web app works and how content changes propagate to this app.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Common setup
 
-### `npm run eject`
+Clone the repo and install the dependencies.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+git clone https://github.com/contentful/the-example-app.nodejs.git
+cd the-example-app.nodejs
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm install
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Steps for read-only access
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+To start the express server, run the following
 
-## Learn More
+```bash
+npm run start:dev
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Open [http://localhost:3000](http://localhost:3000) and take a look around.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
+## Steps for read and write access (recommended)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Step 1: Install the [Contentful CLI](https://www.npmjs.com/package/contentful-cli)
 
-### Analyzing the Bundle Size
+Step 2: Login to Contentful through the CLI. It will help you to create a [free account](https://www.contentful.com/sign-up/) if you don't have one already.
+```
+contentful login
+```
+Step 3: Create a new space
+```
+contentful space create --name 'My space for the example app'
+```
+Step 4: [Seed](https://github.com/contentful/contentful-cli/tree/master/docs/space/seed) the new space with the example content model [`the-example-app`](https://github.com/contentful/content-models/tree/master/the-example-app). Replace the `SPACE_ID` with the id returned from the create command executed in step 3
+```
+contentful space seed -s '<SPACE_ID>' -t the-example-app
+```
+Step 5: Head to the Contentful web app's API section and grab `SPACE_ID`, `DELIVERY_ACCESS_TOKEN`, `PREVIEW_ACCESS_TOKEN`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Step 6: Open `variables.env` and inject your credentials so it looks like this
 
-### Making a Progressive Web App
+```
+NODE_ENV=development
+CONTENTFUL_SPACE_ID=<SPACE_ID>
+CONTENTFUL_DELIVERY_TOKEN=<DELIVERY_ACCESS_TOKEN>
+CONTENTFUL_PREVIEW_TOKEN=<PREVIEW_ACCESS_TOKEN>
+PORT=3000
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Step 7: To start the express server, run the following
+```bash
+npm run start:dev
+```
+Final Step:
 
-### Advanced Configuration
+Open [http://localhost:3000?editorial_features=enabled](http://localhost:3000?editorial_features=enabled) and take a look around. This URL flag adds an “Edit” button in the app on every editable piece of content which will take you back to Contentful web app where you can make changes. It also adds “Draft” and “Pending Changes” status indicators to all content if relevant.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Deploy to Heroku
+You can also deploy this app to Heroku:
 
-### Deployment
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-### `npm run build` fails to minify
+## Use Docker
+You can also run this app as a Docker container:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Step 1: Clone the repo
+
+```bash
+git clone https://github.com/contentful/the-example-app.nodejs.git
+```
+
+Step 2: Build the Docker image
+
+```bash
+docker build -t the-example-app.nodejs .
+```
+
+Step 3: Run the Docker container locally:
+
+```bash
+docker run -p 3000:3000 -d the-example-app.nodejs
+```
+
+If you created your own Contentful space, you can use it by overriding the following environment variables:
+
+```bash
+docker run -p 3000:3000 \
+  -e CONTENTFUL_SPACE_ID=<SPACE_ID> \
+  -e CONTENTFUL_DELIVERY_TOKEN=<DELIVERY_ACCESS_TOKEN> \
+  -e CONTENTFUL_PREVIEW_TOKEN=<PREVIEW_ACCESS_TOKEN> \
+  -d the-example-app.nodejs
+```
